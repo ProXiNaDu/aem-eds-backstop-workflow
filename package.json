@@ -1,8 +1,8 @@
 {
-  "name": "@adobe/aem-boilerplate",
+  "name": "aem-eds-backstop-workflow",
   "private": true,
   "version": "1.3.0",
-  "description": "Starter project for Adobe Helix",
+  "description": "This repository serves as an example of how BackstopJS can be integrated to easily add visual testing to a site. Using BackstopJS within EDS can significantly help ensure that no existing functionality is broken after changes are made.",
   "scripts": {
     "lint:js": "eslint .",
     "lint:css": "stylelint \"blocks/**/*.css\" \"styles/*.css\"",
@@ -11,14 +11,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/adobe/aem-boilerplate.git"
+    "url": "git+https://github.com/ProXiNaDu/aem-eds-backstop-workflow.git"
   },
-  "author": "Adobe",
-  "license": "Apache License 2.0",
-  "bugs": {
-    "url": "https://github.com/adobe/aem-boilerplate/issues"
-  },
-  "homepage": "https://github.com/adobe/aem-boilerplate#readme",
+  "author": "Ilya Kuliashou",
+  "homepage": "https://github.com/ProXiNaDu/aem-eds-backstop-workflow.git#readme",
   "devDependencies": {
     "@babel/eslint-parser": "7.27.1",
     "eslint": "8.57.1",
