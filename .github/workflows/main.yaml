@@ -43,8 +43,8 @@ jobs:
         
         # Extract failed cases
         TOTAL_CASES=$(jq -r '.tests | length' "$REPORT_JSON_FILE")
-        FAILED_CASES=$(jq -r '.tests[] | select(.status == "fail") | "\(.pair.label) (Viewport: \(.pair.viewportLabel), Diff: \(.pair.diff.misMatchPercentage)%)"' "$REPORT_JSON_FILE" | sed '/^\s*$/d')
-        TOTAL_FAILED=$(echo "$FAILED_CASES" | wc -l | tr -d ' ' || true)
+        FAILED_CASES=$(jq -r '.tests[] | select(.status == "fail") | "\(.pair.label) (Viewport: \(.pair.viewportLabel), Diff: \(.pair.diff.misMatchPercentage)%)"' "$REPORT_JSON_FILE")
+        TOTAL_FAILED=$(jq -r '[.tests[] | select(.status == "fail")] | length' "$REPORT_JSON_FILE")
 
         # Start writing the summary report
         echo "# Visual Regression Testing Report" >> $GITHUB_STEP_SUMMARY
