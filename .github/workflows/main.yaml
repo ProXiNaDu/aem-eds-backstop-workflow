@@ -12,3 +12,60 @@ jobs:
         node-version: 20
     - run: npm ci
     - run: npm run lint
+
+    - name: Generate reference screenshots
+      run: npx backstopjs reference --configPath=backstop.js
+    - name: Test current branch
+      run: npx backstopjs test --configPath=backstop.js
+
+    - name: Upload diff report
+      id: report-upload-step
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: backstopjs-report
+        path: backstop_data/report
+        retention-days: 1 # Recommended: Set retention days for the artifact stay in GitHub free limits.
+
+    - name: Generate Markdown Report
+      if: always()
+      run: |
+        # Locate the report.json file
+        echo "Locating BackstopJS results JSON report..."
+        REPORT_JSON_FILE=$(find backstop_data/report/bitmaps_test -type f -name "report.json" | sort | tail -n 1)
+
+        if [ -z "$REPORT_JSON_FILE" ]; then
+          echo "Error: No BackstopJS JSON report file found!"
+          exit 1
+        fi
+
+        echo "Found report file: $REPORT_JSON_FILE"
+        
+        # Extract failed cases
+        TOTAL_CASES=$(jq -r '.tests | length' "$REPORT_JSON_FILE")
+        FAILED_CASES=$(jq -r '.tests[] | select(.status == "fail") | "\(.pair.label) (Viewport: \(.pair.viewportLabel), Diff: \(.pair.diff.misMatchPercentage)%)"' "$REPORT_JSON_FILE")
+        TOTAL_FAILED=$(jq -r '[.tests[] | select(.status == "fail")] | length' "$REPORT_JSON_FILE")
+
+        # Start writing the summary report
+        echo "# Visual Regression Testing Report" >> $GITHUB_STEP_SUMMARY
+        
+        # Overview stats
+        echo "## Summary" >> $GITHUB_STEP_SUMMARY
+        if [ "$TOTAL_FAILED" -eq "0" ]; then
+          echo "**✅ All $TOTAL_CASES test cases passed successfully!**" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "**❌ Visual differences detected in $TOTAL_FAILED out of $TOTAL_CASES test cases!**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+        fi
+
+        # List failed scenarios if any
+        if [ ! -z "$FAILED_CASES" ]; then
+          echo "## Failed Scenarios" >> $GITHUB_STEP_SUMMARY
+          echo "$FAILED_CASES" | while IFS= read -r case; do
+            echo "- $case" >> $GITHUB_STEP_SUMMARY
+          done
+          echo "" >> $GITHUB_STEP_SUMMARY
+        fi
+
+        # Construct and add artifact link
+        echo "***Check the full [BackstopJS HTML Report](${{steps.report-upload-step.outputs.artifact-url}}) for more details.***" >> $GITHUB_STEP_SUMMARY
