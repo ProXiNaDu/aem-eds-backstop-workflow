@@ -17,6 +17,7 @@
   "homepage": "https://github.com/ProXiNaDu/aem-eds-backstop-workflow.git#readme",
   "devDependencies": {
     "@babel/eslint-parser": "7.27.1",
+    "backstopjs": "^6.3.25",
     "eslint": "8.57.1",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-plugin-import": "2.31.0",
