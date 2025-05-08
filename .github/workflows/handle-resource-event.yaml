@@ -1,0 +1,11 @@
+name: Handle Resource Event
+on: 
+  repository_dispatch:
+    types:
+      - resource-published
+      - resource-unpublished
+jobs:
+  handle:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "${{ toJson(github.event) }}"
